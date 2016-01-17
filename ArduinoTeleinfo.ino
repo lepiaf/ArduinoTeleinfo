@@ -60,6 +60,8 @@ void loop()
         strncpy(&bufferTeleinfo[0], &bufferTeleinfo[1], bufferLen - 3);
         bufferTeleinfo[bufferLen - 3] =  0x00;
 
+        Serial.println(getLabel(bufferTeleinfo));
+
         Serial.println(handleBuffer(bufferTeleinfo));
       } else {
         bufferLen++;
@@ -69,6 +71,23 @@ void loop()
 
   // après chaque fin de trame, on provoque un retour chariot
   Serial.println("");
+}
+
+
+String getLabel(char *bufferTeleinfo)
+{
+  char label[10] = "";
+  int i;
+  for (i = 0; i < 22; i++) {
+    if (bufferTeleinfo[i] != 0x20) {
+       label[i] = bufferTeleinfo[i];
+    }
+
+    break;
+  }
+
+  return String(label);
+  
 }
 
 //Lit le buffer pour trouver le label complet et sa valeur
