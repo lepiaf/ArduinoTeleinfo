@@ -1,8 +1,3 @@
-
-// Nous utilisons la bibliothèque Software.Serial, ce
-// qui permet de configurer le port série sur d'autres
-// pins que les habituelles 0 & 1 déjà utilisées par
-// le "moniteur série"
 #include <SoftwareSerial.h>
 
 #define startFrame 0x02
@@ -11,35 +6,20 @@
 #define endLine 0x0D
 #define maxFrameLen 280
 
-// On crée une instance de SoftwareSerial
 SoftwareSerial* cptSerial;
 
-int comptChar = 0; // variable de comptage des caractères reçus
 char bufferTeleinfo[21] = "";
 int bufferLen = 0;
 int checkSum;
-int sequenceNumnber = 0;   // number of information group
 
-// Fonction d'initialisation de la carte Arduino, appelée
-// 1 fois à la mise sous-tension ou après un reset
 void setup()
 {
-  // On initialise le port utilisé par le "moniteur série".
-  // Attention de régler la meme vitesse dans sa fenêtre
   Serial.begin(115200);
-
-  // On définit les PINs utilisées par SoftwareSerial,
-  // 8 en réception, 9 en émission (en fait nous ne
-  // ferons pas d'émission)
   cptSerial = new SoftwareSerial(8, 9);
-  // On initialise le port avec le compteur EDF à 1200 bauds :
-  //  vitesse de la Télé-Information d'après la doc EDF
   cptSerial->begin(1200);
   Serial.println(F("setup complete"));
 }
 
-// Boucle principale, appelée en permanence une fois le
-// setup() terminé
 void loop()
 {
   // Variable de stockage des caractères reçus
@@ -55,25 +35,23 @@ void loop()
 
   // Boucle d'attente d'affichage des caractères reçus,
   // jusqu'à réception du caractère de fin de trame
-  while (charIn != endFrame)
-  {
+  while (charIn != endFrame) {
     // S'il y a des caractères disponibles on les traite
-    if (cptSerial->available())
-    {
+    if (cptSerial->available()) {
       // on "zappe" le 8ème bit
       charIn = cptSerial->read() & 0x7F;
-      // on affiche chaque caractère reçu dans le
-      // "moniteur série"
 
+      // début de la ligne, remise à zéro du bufferLen
       if (charIn == startLine) {
         bufferLen = 0;
       }
 
+      // populate bufferTeleinfo
       bufferTeleinfo[bufferLen] = charIn;
 
-      if (charIn == endLine)
-      {
-
+      // fin de ligne teleinfo, début de la lecture de la ligne complète
+      if (charIn == endLine) {
+        // obtenir le dernier caratère du tampon qui contient le checksum
         checkSum = bufferTeleinfo[bufferLen - 1];
         if (calculateChecksum(bufferTeleinfo, bufferLen) != checkSum) {
           Serial.println(F("Checksum error ..."));
@@ -83,7 +61,6 @@ void loop()
         bufferTeleinfo[bufferLen - 3] =  0x00;
 
         Serial.println(handleBuffer(bufferTeleinfo));
-
       } else {
         bufferLen++;
       }
@@ -94,9 +71,7 @@ void loop()
   Serial.println("");
 }
 
-/**
-   Lit le buffer pour trouver le label complet et sa valeur
-*/
+//Lit le buffer pour trouver le label complet et sa valeur
 String handleBuffer(char *bufferTeleinfo)
 {
   char* resultString = strchr(bufferTeleinfo, ' ') + 1;
@@ -119,27 +94,27 @@ String handleBuffer(char *bufferTeleinfo)
   }
 
   if (firstCharBufferTeleinfo == 'H' && bufferTeleinfo[3] == 'C') { //HCHC
-    label = "HCHC:";
+    label = "Index option heure creuse - heure creuse:";
     return label + resultString;
   }
 
   if (firstCharBufferTeleinfo == 'H' && bufferTeleinfo[3] == 'P') { //HCHP
-    label = "HCHP:";
+    label = "Index option heure creuse - heure pleine:";
     return label + resultString;
   }
 
   if (firstCharBufferTeleinfo == 'P' && bufferTeleinfo[1] == 'T') { //PTEC
-    label = "PTEC:";
+    label = "Période tarifaire en cours:";
     return label + resultString;
   }
 
   if (firstCharBufferTeleinfo == 'I' && bufferTeleinfo[1] == 'I') { //IINST
-    label = "IINST:";
+    label = "Intensité Instantanée:";
     return label + resultString;
   }
 
   if (firstCharBufferTeleinfo == 'I' && bufferTeleinfo[1] == 'M') { //IMAX
-    label = "IMAX:";
+    label = "Intensité maximale:";
     return label + resultString;
   }
 
@@ -149,13 +124,13 @@ String handleBuffer(char *bufferTeleinfo)
   }
 
   if (firstCharBufferTeleinfo == 'H' && bufferTeleinfo[3] == 'H') { //HHPHC
-    label = "HHPHC:";
+    label = "Horaire Heures Pleines Heures Creuses:";
     return label + resultString;
   }
 
   label = "Valeur inconnue:";
 
-  return label + resultString;
+  return label + String(bufferTeleinfo);
 }
 
 char calculateChecksum(char *buff, uint8_t len)
