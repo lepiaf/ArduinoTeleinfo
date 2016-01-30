@@ -14,7 +14,7 @@ TeleInfo::TeleInfo()
 {
   // utilisation d'une entrée série logiciel : Arduino UNO
   // Dans le cas d'un Arduino MEGA, il est possible d'utiliser Serial1, Serial2
-  cptSerial = new SoftwareSerial(8, 9);
+  cptSerial = new SoftwareSerial(8, 7);
   cptSerial->begin(1200);
 }
 
