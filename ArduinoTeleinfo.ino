@@ -39,11 +39,11 @@ void loop()
   readCompleted = homeTeleInfo->readTeleInfo();
 
   if (readCompleted) {
-    gw.send(msgIINST.set((homeTeleInfo->IINST).toInt(), 1));
-    gw.send(msgHCHC.set((homeTeleInfo->HCHC).toInt(), 1));
-    gw.send(msgHCHP.set((homeTeleInfo->HCHP).toInt(), 1));
-    gw.send(msgPAPP.set((homeTeleInfo->PAPP).toInt(), 1));
+    gw.send(msgIINST.set(homeTeleInfo->IINST, 0));
+    gw.send(msgHCHC.set((homeTeleInfo->HCHC).toInt(), 0));
+    gw.send(msgHCHP.set((homeTeleInfo->HCHP).toInt(), 0));
+    gw.send(msgPAPP.set((homeTeleInfo->PAPP).toInt(), 0));
   }
 
-  gw.sleep(10000);
+  delay(10000);
 }

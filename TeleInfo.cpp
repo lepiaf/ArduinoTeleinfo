@@ -51,9 +51,6 @@ boolean TeleInfo::readTeleInfo()
         // obtenir le dernier caratère du tampon qui contient le checksum
         checkSum = bufferTeleinfo[bufferLen - 1];
         if (calculateChecksum(bufferTeleinfo, bufferLen) != checkSum) {
-#ifdef DEBUG
-          Serial.println(F("Checksum error ..."));
-#endif
           return false;
         }
 
@@ -88,24 +85,22 @@ char TeleInfo::calculateChecksum(char *buff, uint8_t len)
 boolean TeleInfo::handleBuffer(char *bufferTeleinfo)
 {
   char* resultString = strchr(bufferTeleinfo, ' ') + 1;
-  String label;
   char firstCharBufferTeleinfo = bufferTeleinfo[0];
 
-  if (getLabel(bufferTeleinfo) == "ADCO") { //ADC0
-    ADC0 = String(resultString);
+//  if (firstCharBufferTeleinfo == 'O') { //ADC0
+//    ADC0 = String(resultString);
+//    return true;
+//  }
 
-    return true;
-  }
+//  if (firstCharBufferTeleinfo == 'O') { //OPTARIF
+//    OPTARIF = String(resultString);
+//    return true;
+//  }
 
-  if (getLabel(bufferTeleinfo) == "OPTARIF") { //OPTARIF
-    OPTARIF = String(resultString);
-    return true;
-  }
-
-  if (firstCharBufferTeleinfo == 'I' && bufferTeleinfo[1] == 'S') { //ISOUSC
-    ISOUSC = String(resultString);
-    return true;
-  }
+//  if (firstCharBufferTeleinfo == 'I' && bufferTeleinfo[1] == 'S') { //ISOUSC
+//    ISOUSC = String(resultString);
+//    return true;
+//  }
 
   if (firstCharBufferTeleinfo == 'H' && bufferTeleinfo[3] == 'C') { //HCHC
     HCHC = String(resultString);
@@ -117,47 +112,30 @@ boolean TeleInfo::handleBuffer(char *bufferTeleinfo)
     return true;
   }
 
-  if (firstCharBufferTeleinfo == 'P' && bufferTeleinfo[1] == 'T') { //PTEC
-    PTEC = String(resultString);
-    return true;
-  }
+//  if (firstCharBufferTeleinfo == 'P' && bufferTeleinfo[1] == 'T') { //PTEC
+//    PTEC = String(resultString);
+//    return true;
+//  }
 
   if (firstCharBufferTeleinfo == 'I' && bufferTeleinfo[1] == 'I') { //IINST
-    IINST = String(resultString);
+    IINST = atoi(resultString);
     return true;
   }
 
-  if (firstCharBufferTeleinfo == 'I' && bufferTeleinfo[1] == 'M') { //IMAX
-    IMAX = String(resultString);
-    return true;
-  }
+//  if (firstCharBufferTeleinfo == 'I' && bufferTeleinfo[1] == 'M') { //IMAX
+//    IMAX = String(resultString);
+//    return true;
+//  }
 
   if (firstCharBufferTeleinfo == 'P' && bufferTeleinfo[1] == 'A') { //PAPP
     PAPP = String(resultString);
     return true;
   }
 
-  if (firstCharBufferTeleinfo == 'H' && bufferTeleinfo[3] == 'H') { //HHPHC
-    HHPHC = String(resultString);
-    return true;
-  }
-
-  //  label = "Valeur inconnue:";
-  //  return label + String(bufferTeleinfo);
+//  if (firstCharBufferTeleinfo == 'H' && bufferTeleinfo[3] == 'H') { //HHPHC
+//    HHPHC = String(resultString);
+//    return true;
+//  }
 
   return false;
-}
-
-String TeleInfo::getLabel(char *bufferTeleinfo)
-{
-  char label[10] = "";
-  int i;
-  for (i = 0; i < 22; i++) {
-    if (bufferTeleinfo[i] == 0x20) {
-      break;
-    }
-    label[i] = bufferTeleinfo[i];
-  }
-
-  return String(label);
 }
