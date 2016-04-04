@@ -38,6 +38,7 @@ void setup()
 char optarif[4];
 void loop()
 {
+  char optarif[4] = "";
   boolean readCompleted;
   readCompleted = homeTeleInfo->readTeleInfo();
 
