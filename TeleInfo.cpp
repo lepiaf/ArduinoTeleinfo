@@ -5,6 +5,7 @@
 #define endFrame 0x03
 #define startLine 0x0A
 #define endLine 0x0D
+#define maxFrameLen 280
 
 char bufferTeleinfo[21] = "";
 int bufferLen = 0;
@@ -23,6 +24,11 @@ boolean TeleInfo::readTeleInfo()
 {
   // Variable de stockage des caractères reçus
   char charIn = 0;
+  int comptChar = 0;
+  char bufferTeleinfo[21] = "";
+  int bufferLen = 0;
+  int checkSum;
+  
   // Boucle d'attente du caractère de début de trame
   while (charIn != startFrame)
   {
@@ -38,6 +44,7 @@ boolean TeleInfo::readTeleInfo()
     if (cptSerial->available()) {
       // on "zappe" le 8ème bit
       charIn = cptSerial->read() & 0x7F;
+      comptChar++;
 
       // début de la ligne, remise à zéro du bufferLen
       if (charIn == startLine) {
@@ -60,6 +67,13 @@ boolean TeleInfo::readTeleInfo()
 
       } else {
         bufferLen++;
+      }
+
+      if (comptChar > maxFrameLen)
+      {
+        bufferLen = 0;
+        Serial.println(F("Overflow error ..."));
+        return false;
       }
     }
   }
@@ -87,55 +101,55 @@ boolean TeleInfo::handleBuffer(char *bufferTeleinfo)
   char* resultString = strchr(bufferTeleinfo, ' ') + 1;
   char firstCharBufferTeleinfo = bufferTeleinfo[0];
 
-//  if (firstCharBufferTeleinfo == 'O') { //ADC0
-//    ADC0 = String(resultString);
-//    return true;
-//  }
+  //  if (firstCharBufferTeleinfo == 'O') { //ADC0
+  //    ADC0 = String(resultString);
+  //    return true;
+  //  }
 
-//  if (firstCharBufferTeleinfo == 'O') { //OPTARIF
-//    OPTARIF = String(resultString);
-//    return true;
-//  }
+  //  if (firstCharBufferTeleinfo == 'O') { //OPTARIF
+  //    OPTARIF = String(resultString);
+  //    return true;
+  //  }
 
-//  if (firstCharBufferTeleinfo == 'I' && bufferTeleinfo[1] == 'S') { //ISOUSC
-//    ISOUSC = String(resultString);
-//    return true;
-//  }
+  //  if (firstCharBufferTeleinfo == 'I' && bufferTeleinfo[1] == 'S') { //ISOUSC
+  //    ISOUSC = String(resultString);
+  //    return true;
+  //  }
 
   if (firstCharBufferTeleinfo == 'H' && bufferTeleinfo[3] == 'C') { //HCHC
-    HCHC = String(resultString);
+    HCHC = atol(resultString);
     return true;
   }
 
   if (firstCharBufferTeleinfo == 'H' && bufferTeleinfo[3] == 'P') { //HCHP
-    HCHP = String(resultString);
+    HCHP = atol(resultString);
     return true;
   }
 
-//  if (firstCharBufferTeleinfo == 'P' && bufferTeleinfo[1] == 'T') { //PTEC
-//    PTEC = String(resultString);
-//    return true;
-//  }
+  //  if (firstCharBufferTeleinfo == 'P' && bufferTeleinfo[1] == 'T') { //PTEC
+  //    PTEC = String(resultString);
+  //    return true;
+  //  }
 
   if (firstCharBufferTeleinfo == 'I' && bufferTeleinfo[1] == 'I') { //IINST
     IINST = atoi(resultString);
     return true;
   }
 
-//  if (firstCharBufferTeleinfo == 'I' && bufferTeleinfo[1] == 'M') { //IMAX
-//    IMAX = String(resultString);
-//    return true;
-//  }
+  //  if (firstCharBufferTeleinfo == 'I' && bufferTeleinfo[1] == 'M') { //IMAX
+  //    IMAX = String(resultString);
+  //    return true;
+  //  }
 
   if (firstCharBufferTeleinfo == 'P' && bufferTeleinfo[1] == 'A') { //PAPP
-    PAPP = String(resultString);
+    PAPP = atol(resultString);
     return true;
   }
 
-//  if (firstCharBufferTeleinfo == 'H' && bufferTeleinfo[3] == 'H') { //HHPHC
-//    HHPHC = String(resultString);
-//    return true;
-//  }
+  //  if (firstCharBufferTeleinfo == 'H' && bufferTeleinfo[3] == 'H') { //HHPHC
+  //    HHPHC = String(resultString);
+  //    return true;
+  //  }
 
   return false;
 }

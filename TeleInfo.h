@@ -9,14 +9,13 @@ class TeleInfo
 
     String ADC0;
     String HHPHC;
-    String ISOUSC;             // intensité souscrite
+    int ISOUSC;             // intensité souscrite
     int IINST;              // intensité instantanée en A
-    String IMAX;               // intensité maxi en A
-    String PAPP;               // puissance apparente en VA
-    String HCHC;  // compteur Heures Creuses en W
-    String HCHP;  // compteur Heures Pleines en W
+    int IMAX;               // intensité maxi en A
+    int PAPP;               // puissance apparente en VA
+    unsigned long HCHC;  // compteur Heures Creuses en W
+    unsigned long HCHP;  // compteur Heures Pleines en W
     String PTEC;            // Régime actuel : HPJB, HCJB, HPJW, HCJW, HPJR, HCJR
-
     String OPTARIF;         // option tarifaire
 
   private:
