@@ -28,7 +28,7 @@ boolean TeleInfo::readTeleInfo()
   char bufferTeleinfo[21] = "";
   int bufferLen = 0;
   int checkSum;
-  
+
   // Boucle d'attente du caractère de début de trame
   while (charIn != startFrame)
   {
@@ -106,10 +106,10 @@ boolean TeleInfo::handleBuffer(char *bufferTeleinfo)
   //    return true;
   //  }
 
-  //  if (firstCharBufferTeleinfo == 'O') { //OPTARIF
-  //    OPTARIF = String(resultString);
-  //    return true;
-  //  }
+  if (firstCharBufferTeleinfo == 'O') { //OPTARIF
+    OPTARIF = String(resultString);
+    return true;
+  }
 
   //  if (firstCharBufferTeleinfo == 'I' && bufferTeleinfo[1] == 'S') { //ISOUSC
   //    ISOUSC = String(resultString);

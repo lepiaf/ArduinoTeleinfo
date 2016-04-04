@@ -9,6 +9,7 @@
 #define ID_IINST 5
 #define ID_HCHC 6
 #define ID_HCHP 7
+#define ID_OPTARIF 8
 
 TeleInfo* homeTeleInfo;
 
@@ -18,6 +19,7 @@ MyMessage msgPAPP(ID_PAPP, V_WATT);
 MyMessage msgIINST(ID_IINST, V_CURRENT);
 MyMessage msgHCHC(ID_HCHC, V_KWH);
 MyMessage msgHCHP(ID_HCHP, V_KWH);
+MyMessage msgOPTARIF(ID_OPTARIF, V_VAR1);
 
 void setup()
 {
@@ -33,7 +35,7 @@ void setup()
 
   Serial.println(F("Mysensor Node EDF TeleInfo ready"));
 }
-
+char optarif[4];
 void loop()
 {
   boolean readCompleted;
@@ -47,6 +49,10 @@ void loop()
     gw.send(msgHCHP.set(homeTeleInfo->HCHP, 0));
     delay(100);
     gw.send(msgPAPP.set(homeTeleInfo->PAPP, 0));
+    delay(100);
+    
+    (homeTeleInfo->OPTARIF).toCharArray(optarif, 4);
+    gw.send(msgOPTARIF.set(optarif, 0));
   }
 
   delay(10000);
